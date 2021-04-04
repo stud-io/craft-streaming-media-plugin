@@ -1,0 +1,41 @@
+{
+    "name": "stud-io/streaming-media",
+    "description": "A plugin to work with video files and streaming media services like Cloudflare Stream, Coconut, and S3-compliant storage backends.",
+    "type": "craft-plugin",
+    "version": "0.0.1",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "streaming-media"
+    ],
+    "support": {
+        "docs": "https://github.com/stud-io/streaming-media/blob/master/README.md",
+        "issues": "https://github.com/stud-io/streaming-media/issues"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Stud I/O",
+            "homepage": "stud-io.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "StudIO\\StreamingMedia\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "streaming-media",
+        "handle": "streaming-media",
+        "developer": "Stud I/O",
+        "developerUrl": "stud-io.com",
+        "documentationUrl": "https://github.com/stud-io/streaming-media/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/stud-io/streaming-media/master/CHANGELOG.md",
+        "class": "StudIO\\StreamingMedia\\StreamingMedia"
+    }
+}
