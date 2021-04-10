@@ -1,0 +1,21 @@
+{% for backend in settings.backends %}
+    {% include "streaming-media/settings_backend.twig" with {
+        'backend_index': loop.index 
+    } %}
+    <hr/>
+{% endfor %}
+
+<div id="newCloudflareStreamBackend">
+    {# include "streaming-media/settings_backend.twig" with {
+        'backend': { 
+            'title': '', 
+            'backend': 'CloudflareStreamBackend', 
+            'config': {
+                'api_token': '',
+                'account_id': '',
+                'email': ''
+            }
+        },
+        'backend_index': settings.backends | length + 1
+    } #}
+</div>

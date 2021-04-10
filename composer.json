@@ -18,7 +18,7 @@
     "authors": [
         {
             "name": "Stud I/O",
-            "homepage": "stud-io.com"
+            "homepage": "https://stud-io.com"
         }
     ],
     "require": {
@@ -30,10 +30,10 @@
         }
     },
     "extra": {
-        "name": "streaming-media",
+        "name": "Streaming Media",
         "handle": "streaming-media",
         "developer": "Stud I/O",
-        "developerUrl": "stud-io.com",
+        "developerUrl": "https://stud-io.com",
         "documentationUrl": "https://github.com/stud-io/streaming-media/blob/master/README.md",
         "changelogUrl": "https://raw.githubusercontent.com/stud-io/streaming-media/master/CHANGELOG.md",
         "class": "StudIO\\StreamingMedia\\StreamingMedia"

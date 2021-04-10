@@ -1,0 +1,130 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set fullPageForm = true %}
+{# {% set saveShortcutRedirect = continueEditingUrl %} #}
+{% set retainScrollOnSaveShortcut = true %}
+
+{% set crumbs = [
+    { label: 'Streaming Media', url: url('streaming-media') },
+] %}
+
+{% block details %}
+    <div class="meta">
+        {% if streamAsset.getStatus() in ['enabled', 'disabled'] %}
+            {{ forms.lightswitchField({
+                label: 'Enabled',
+                instructions: 'Is this stream asset enabled?',
+                id: 'enabled',
+                name: 'enabled',
+                on: streamAsset.enabled,
+            }) }}
+        {% endif %}
+        {% if streamAsset.getStatus() in ['draft', 'transcode_pending', 'transcode_failed']  %}
+            {{ forms.lightswitchField({
+                label: 'Draft',
+                instructions: 'Is this a draft?',
+                id: 'draft',
+                name: 'draft',
+                on: streamAsset.draft,
+            }) }}
+        {% endif %}
+    </div>
+    <div class="meta">
+        {{ forms.textField({
+            label: 'Status',
+            value: streamAsset.getStatus(),
+            readonly: true
+        }) }}
+        {{ forms.textField({
+            label: 'Transcoding Status',
+            value: streamAsset.transcoding_backend_status,
+            readonly: true
+
+        }) }}
+        {{ forms.textField({
+            label: 'Transcoding Reference',
+            value: streamAsset.transcoding_backend_reference,
+            readonly: true
+        }) }}
+        {{ forms.textField({
+            label: 'Storage Status',
+            value: streamAsset.storage_backend_status,
+            readonly: true
+
+        }) }}
+        {{ forms.textField({
+            label: 'Storage Reference',
+            value: streamAsset.storage_backend_reference,
+            readonly: true
+        }) }}
+    </div>
+{% endblock %}
+
+{% block content %}
+    {{ actionInput('streaming-media/stream-assets/save') }}
+    {{ redirectInput('streaming-media' ) }}
+
+    {{ hiddenInput('streamAssetId', streamAsset.id) }}
+    
+    <div id="fields">
+        {{ forms.textField({
+            label: 'Title',
+            id: 'title',
+            name: 'title',
+            autocorrect: false,
+            autocapitalize: false,
+            value: streamAsset.title,
+            placeholder: "Enter title",
+            errors: (streamAsset.getErrors('title'))
+        }) }}
+
+        {{ forms.textField({
+            label: 'Source URL',
+            id: 'sourceUrl',
+            name: 'source_url',
+            autocorrect: false,
+            autocapitalize: false,
+            value: streamAsset.source_url,
+            placeholder: "Enter source url",
+            errors: (streamAsset.getErrors('sourceUrl')),
+            readonly: streamAsset.draft != true,
+            disabled: streamAsset.draft != true
+        }) }}
+
+        {{ forms.textField({
+            label: 'Source Asset',
+            id: 'sourceAsset',
+            name: 'source_asset',
+            placeholder: "Select source asset",
+            errors: (streamAsset.getErrors('sourceAsset')),
+            readonly: streamAsset.draft != true,
+            disabled: streamAsset.draft != true
+        }) }}
+
+        {{ forms.selectField({
+            first: false,
+            label: "Transcoding Backend",
+            instructions: "Which backend should be used for transcoding?",
+            id: 'transcodingBackend',
+            name: 'transcoding_backend',
+            options: availableTranscodingBackends,
+            value: streamAsset.transcoding_backend,
+            readonly: streamAsset.draft != true,
+            disabled: streamAsset.draft != true
+        }) }}
+        
+        {{ forms.selectField({
+            first: false,
+            label: "Storage Backend",
+            instructions: "Which backend should be used for storage?",
+            id: 'storageBackend',
+            name: 'storage_backend',
+            options: availableStorageBackends,
+            value: streamAsset.storage_backend,
+            readonly: streamAsset.draft != true,
+            disabled: streamAsset.draft != true
+        }) }}
+    </div>
+
+{% endblock %}

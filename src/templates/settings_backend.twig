@@ -1,0 +1,65 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.textField({
+    label: 'Title',
+    name: 'backends['~backend_index~'][title]',
+    placeholder: "Enter title",
+    value: backend.title
+}) }}
+
+{{ forms.selectField({
+    first: false,
+    label: 'Backend',
+    name: 'backends['~backend_index~'][backend]',
+    options: {
+        'CloudflareStreamBackend': 'Cloudflare Stream',
+        'CoconutBackend': 'Coconut',
+        'GenericObjectStorageBackend': 'S3-Compliant Storage Bucket',
+    },
+    value: backend.backend,
+}) }}
+
+{% if backend.backend in ['CloudflareStreamBackend'] %}
+    {{ forms.textField({
+        label: 'account_id',
+        name: 'backends['~backend_index~'][config][account_id]',
+        placeholder: "Enter Account ID",
+        value: backend.config.account_id
+    }) }}
+{% endif %}
+
+{% if backend.backend in ['CloudflareStreamBackend', 'CoconutBackend'] %}
+    {{ forms.textField({
+        label: 'api_token',
+        name: 'backends['~backend_index~'][config][api_token]',
+        placeholder: "Enter API Token",
+        value: backend.config.api_token
+    }) }}
+{% endif %}
+
+{% if backend.backend in ['GenericObjectStorageBackend'] %}
+    {{ forms.textField({
+        label: 'bucket_name',
+        name: 'backends['~backend_index~'][config][bucket_name]',
+        placeholder: "Enter bucket name",
+        value: backend.config.bucket_name
+    }) }}
+    {{ forms.textField({
+        label: 's3_url',
+        name: 'backends['~backend_index~'][config][s3_url]',
+        placeholder: "Enter s3_url",
+        value: backend.config.s3_url
+    }) }}
+    {{ forms.textField({
+        label: 'access_key',
+        name: 'backends['~backend_index~'][config][access_key]',
+        placeholder: "Enter access_key",
+        value: backend.config.access_key
+    }) }}
+    {{ forms.textField({
+        label: 'secret_key',
+        name: 'backends['~backend_index~'][config][secret_key]',
+        placeholder: "Enter secret_key",
+        value: backend.config.secret_key
+    }) }}
+{% endif %}

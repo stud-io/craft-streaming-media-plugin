@@ -11,9 +11,14 @@ class Install extends Migration
           // create the stream asset table
           $this->createTable('{{%stream_assets}}', [
               'id' => $this->integer()->notNull(),
-              'source_url' => $this->char(512)->notNull(),
-              'backend_transcode' => $this->integer(),
-              'backend_storage' => $this->integer(),
+              'draft' => $this->boolean()->notNull(),
+              'source_url' => $this->string()->notNull(),
+              'transcoding_backend' => $this->integer(),
+              'transcoding_backend_status' => $this->string(),
+              'transcoding_backend_reference' => $this->string(),
+              'storage_backend' => $this->integer(),
+              'storage_backend_status' => $this->string(),
+              'storage_backend_reference' => $this->string(),
               'dateCreated' => $this->dateTime()->notNull(),
               'dateUpdated' => $this->dateTime()->notNull(),
               'uid' => $this->uid(),
