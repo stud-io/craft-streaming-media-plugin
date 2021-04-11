@@ -63,3 +63,20 @@
         value: backend.config.secret_key
     }) }}
 {% endif %}
+
+<h3>Playback Token Key Configuration</h3>
+
+{% if backend.backend in ['CloudflareStreamBackend'] %}
+    {{ forms.textField({
+        label: 'rsa_key_id',
+        name: 'backends['~backend_index~'][config][rsa_key_id]',
+        placeholder: "Enter RSA Key ID",
+        value: backend.config.rsa_key_id
+    }) }}
+    {{ forms.textField({
+        label: 'rsa_key_pem',
+        name: 'backends['~backend_index~'][config][rsa_key_pem]',
+        placeholder: "Enter RSA Key PEM",
+        value: backend.config.rsa_key_pem
+    }) }}
+{% endif %}

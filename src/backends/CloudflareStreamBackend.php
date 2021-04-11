@@ -12,6 +12,8 @@ class CloudflareStreamBackend
 {
     public $api;
 
+    public $rsa_key;
+
     public function __construct($backend_config)
     {
         $this->api = API\Factory::make(
@@ -19,6 +21,12 @@ class CloudflareStreamBackend
             $backend_config['api_token'],
             'api_token'
         );
+
+        if(isset($backend_config['rsa_key_id']) &&  isset($backend_config['rsa_key_pem']))
+            $this->rsa_key = [
+                'id' => $backend_config['rsa_key_id'],
+                'pem' => $backend_config['rsa_key_pem'],
+            ];
     }
 
     public function execute(StreamAsset $stream_asset)
@@ -58,5 +66,57 @@ class CloudflareStreamBackend
           return $this->api->getStream($stream_asset->transcoding_backend_reference);
 
         return false;
+    }
+
+    public function issue_token(StreamAsset $stream_asset, $options)
+    {
+        $expire_ts = null;
+
+        // FIXME: Set expire_ts to expire datetime obj
+        // if($options['expire'])
+
+        return $this->signToken($stream_asset->transcoding_backend_reference, $this->rsa_key, $expire_ts);
+    }
+
+    /**
+     * Signs a url token for the stream reproduction
+     *
+     * @param string $uid The stream uid.
+     * @param array $key The key id and pem used for the signing.
+     * @param string $exp Expiration; a unix epoch timestamp after which the token will not be accepted.
+     * @param string $nbf notBefore; a unix epoch timestamp before which the token will not be accepted.
+     *
+     * https://dev.to/robdwaller/how-to-create-a-json-web-token-using-php-3gml
+     * https://developers.cloudflare.com/stream/viewing-videos/securing-your-stream#creating-a-signing-key
+     *
+     */
+    public static function signToken(string $uid, array $key, string $exp = null, string $nbf = null)
+    {
+        $privateKey = base64_decode($key['pem']);
+
+        $header = ['alg' => 'RS256', 'kid' => $key['id']];
+        $payload = ['sub' => $uid, 'kid' => $key['id']];
+
+        if ($exp) {
+            $payload['exp'] = $exp;
+        }
+
+        if ($nbf) {
+            $payload['nbf'] = $nbf;
+        }
+
+        $encodedHeader = self::base64Url(json_encode($header));
+        $encodedPayload = self::base64Url(json_encode($payload));
+
+        openssl_sign("$encodedHeader.$encodedPayload", $signature, $privateKey, 'RSA-SHA256');
+
+        $encodedSignature = self::base64Url($signature);
+
+        return "$encodedHeader.$encodedPayload.$encodedSignature";
+    }
+
+    protected static function base64Url(string $data)
+    {
+        return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
     }
 }

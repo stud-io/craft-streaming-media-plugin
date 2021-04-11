@@ -13,8 +13,10 @@ class Settings extends Model
         'config' => [
           'api_token' => 'some-fancy-api-token',
           'account_id' => 'some-fancy-api-token',
-          'email' => 'some@where.email'
-        ]
+          'email' => 'some@where.email',
+          'rsa_key_id' => 'some-fancy-api-token',
+          'rsa_key_pem' => 'some-fancy-api-token',
+          ]
       ],
       2 => [
         'title' => 'Default Coconut Backend',
