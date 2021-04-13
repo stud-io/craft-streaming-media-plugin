@@ -1,6 +1,7 @@
 module.exports = {
     title: 'Streaming Media Craft Plugin',
     description: 'A Craft Plugin for working with (externally hosted) Streaming Media',
+    base: '/craft-streaming-media-plugin/',
     themeConfig: {
         nav: [
             { text: 'Home', link: '/' },
