@@ -30,3 +30,6 @@
 !.vscode/extensions.json
 config.codekit3
 prepros-6.config
+
+# DOCS
+docs/.vuepress/dist
