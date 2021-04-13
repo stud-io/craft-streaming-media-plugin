@@ -64,7 +64,11 @@
     }) }}
 {% endif %}
 
+{% if plugin('streaming-media').is('pro') %}
+
+{% if backend.backend in ['CloudflareStreamBackend'] %}
 <h3>Playback Token Key Configuration</h3>
+{% endif %}
 
 {% if backend.backend in ['CloudflareStreamBackend'] %}
     {{ forms.textField({
@@ -79,4 +83,6 @@
         placeholder: "Enter RSA Key PEM",
         value: backend.config.rsa_key_pem
     }) }}
+{% endif %}
+
 {% endif %}

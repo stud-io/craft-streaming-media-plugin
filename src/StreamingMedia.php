@@ -37,6 +37,10 @@ use StudIO\StreamingMedia\CraftVariableBehavior;
  */
 class StreamingMedia extends Plugin
 {
+
+    const EDITION_LITE = 'lite';
+    const EDITION_PRO = 'pro';
+
     // Static Properties
     // =========================================================================
 
@@ -155,6 +159,14 @@ class StreamingMedia extends Plugin
             'streaming-media/edit/<streamAssetId:\d+>' => 'streaming-media/stream-assets/edit',
         ]);
       });
+    }
+
+    public static function editions(): array
+    {
+        return [
+            self::EDITION_LITE,
+            self::EDITION_PRO,
+        ];
     }
 
 
