@@ -13,19 +13,22 @@ namespace StudIO\StreamingMedia;
 
 use Craft;
 use craft\base\Plugin;
-use craft\services\Plugins;
 use craft\events\PluginEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\RegisterTemplateRootsEvent;
+use craft\services\Plugins;
 use craft\services\Elements;
+use craft\services\Fields;
+use craft\web\View;
 use craft\web\UrlManager;
 use craft\web\twig\variables\CraftVariable;
 
 use yii\base\Event;
 
 use StudIO\StreamingMedia\elements\StreamAsset;
+use StudIO\StreamingMedia\fields\StreamAssets;
 use StudIO\StreamingMedia\CraftVariableBehavior;
-
 
 /**
  * Main Craft Plugin
@@ -107,8 +110,10 @@ class StreamingMedia extends Plugin
         self::$plugin = $this;
 
         $this->_registerCpRoutes();
-        $this->_registerTwigExtensions();
         $this->_registerElementTypes();
+        $this->_registerFieldTypes();
+        $this->_registerTwigExtensions();
+        $this->_registerTwigUtils();
 
         /**
          * Logging 
@@ -124,6 +129,17 @@ class StreamingMedia extends Plugin
         );
     }
 
+    public function _registerCpRoutes()
+    {
+      Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function(RegisterUrlRulesEvent $event) {
+        $event->rules = array_merge($event->rules, [
+            'streaming-media' => 'streaming-media/stream-assets/index',
+            'streaming-media/new' => 'streaming-media/stream-assets/edit',
+            'streaming-media/edit/<streamAssetId:\d+>' => 'streaming-media/stream-assets/edit',
+        ]);
+      });
+    }
+
     public function _registerElementTypes()
     {
       Event::on(Elements::class,
@@ -134,31 +150,33 @@ class StreamingMedia extends Plugin
       );
     }
 
+    public function _registerFieldTypes()
+    {
+        Event::on(
+            Fields::class,
+            Fields::EVENT_REGISTER_FIELD_TYPES,
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = StreamAssets::class;
+            }
+        );
+    }
+
     public function _registerTwigExtensions()
     {
-      Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
-        /** @var CraftVariable $variable */
-        $variable = $e->sender;
-
-        // Attach a behavior:
-        $variable->attachBehaviors([
-          CraftVariableBehavior::class,
-        ]);
-
-        // // Attach a service:
-        // $variable->set('serviceId', MyService::class);
+      Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+        $event->sender->attachBehaviors([CraftVariableBehavior::class]);
       });
     }
 
-    public function _registerCpRoutes()
+    public function _registerTwigUtils()
     {
-      Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function(RegisterUrlRulesEvent $event) {
-        $event->rules = array_merge($event->rules, [
-            'streaming-media' => 'streaming-media/stream-assets/index',
-            'streaming-media/new' => 'streaming-media/stream-assets/edit',
-            'streaming-media/edit/<streamAssetId:\d+>' => 'streaming-media/stream-assets/edit',
-        ]);
-      });
+        Event::on(
+            View::class,
+            View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
+            function(RegisterTemplateRootsEvent $event) {
+                $event->roots['streaming-media'] = __DIR__ . '/templates/_utils';
+            }   
+        );
     }
 
     public static function editions(): array

@@ -7,7 +7,7 @@ use craft\elements\db\ElementQueryInterface;
 use StudIO\StreamingMedia\elements\db\StreamAssetQuery;
 
 class StreamAsset extends Element
-{
+{    
     /**
      * @inheritdoc
      */
@@ -55,17 +55,22 @@ class StreamAsset extends Element
     const STATUS_TR_INPROG = 'transcode_in_progress';
     const STATUS_TR_FAILED = 'transcode_failed';
     const STATUS_TR_COMPLETED = 'transcode_completed';
+    const STATUS_ST_READY = 'storage_ready';
+    const STATUS_ST_FAILED = 'storage_failed';
         # STATUS_DISABLED
         # STATUS_ENABLED
 
     public static function statuses(): array
     {
-        return [
-            self::STATUS_DRAFT => ['label' => 'Draft', 'color' => '407294'],
-            self::STATUS_TR_PENDING => ['label' => 'Pending transcode', 'color' => '407294'],
-            self::STATUS_TR_INPROG => ['label' => 'Transcode in progress', 'color' => '013056'],
-            self::STATUS_TR_FAILED => ['label' => 'Failed transcode', 'color' => 'ad2828'],
-        ];
+        return array_merge(
+            parent::statuses(),
+            [
+                self::STATUS_DRAFT => ['label' => 'Draft', 'color' => '407294'],
+                self::STATUS_TR_PENDING => ['label' => 'Pending transcode', 'color' => '407294'],
+                self::STATUS_TR_INPROG => ['label' => 'Transcode in progress', 'color' => '013056'],
+                self::STATUS_TR_FAILED => ['label' => 'Failed transcode', 'color' => 'ad2828'],
+            ]
+            );
     }
 
     public function getStatus()
@@ -131,6 +136,14 @@ class StreamAsset extends Element
     public $storage_backend_reference;
    
     public $storage_backend_status;
+
+    public function getStorageBackendReferenceFromJson(){
+        try {
+            return json_decode($this->storage_backend_reference);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
     
     public function afterSave(bool $isNew)
     {
@@ -170,7 +183,7 @@ class StreamAsset extends Element
     {
         return new StreamAssetQuery(static::class);
     }
-    
+
 
     //////////////////////////////////
     // Control Panel Implementation //
@@ -187,17 +200,25 @@ class StreamAsset extends Element
 
     public function getCpEditUrl()
     {
-        return 'streaming-media/'.$this->id;
+        return 'streaming-media/edit/'.$this->id;
     }
 
     protected static function defineTableAttributes(): array
     {
         return [
-            'title' => \Craft::t('app', 'Title'),
+            'title' => 'Title',
+            // 'source_url' => 'Source URL',
+            'transcoding_backend_status' => 'Transcoding Status',
+            'storage_backend_status' => 'Storage Status',
             // 'price' => \Craft::t('plugin-handle', 'Price'),
             // 'currency' => \Craft::t('plugin-handle', 'Currency'),
         ];
     }
+
+    // protected function tableAttributeHtml($attribute)
+    // {
+    //     return parent::tableAttributeHtml($attribute);
+    // }
     
    /*
      * Return editor HTML
@@ -221,5 +242,18 @@ class StreamAsset extends Element
         $html .= parent::getEditorHtml();
 
         return $html;
+    }
+
+    protected static function defineSources($context = null): array
+    {
+        $sources = [
+            [
+                'key' => '*',
+                'label' => 'All Stream Assets',
+                'criteria' => [],
+            ],
+        ];
+
+        return $sources;
     }
 }

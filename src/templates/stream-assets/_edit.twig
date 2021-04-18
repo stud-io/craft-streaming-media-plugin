@@ -2,7 +2,7 @@
 {% import "_includes/forms" as forms %}
 
 {% set fullPageForm = true %}
-{# {% set saveShortcutRedirect = continueEditingUrl %} #}
+{% set saveShortcutRedirect = continueEditingUrl %}
 {% set retainScrollOnSaveShortcut = true %}
 
 {% set crumbs = [
@@ -20,7 +20,7 @@
                 on: streamAsset.enabled,
             }) }}
         {% endif %}
-        {% if streamAsset.getStatus() in ['draft', 'transcode_pending', 'transcode_failed']  %}
+        {% if streamAsset.getStatus() in ['draft', 'transcode_pending', 'transcode_failed', 'disabled']  %}
             {{ forms.lightswitchField({
                 label: 'Draft',
                 instructions: 'Is this a draft?',
@@ -63,7 +63,8 @@
 
 {% block content %}
     {{ actionInput('streaming-media/stream-assets/save') }}
-    {{ redirectInput('streaming-media' ) }}
+    {# {{ redirectInput('streaming-media' ) }} #}
+    {{ redirectInput(continueEditingUrl) }}
 
     {{ hiddenInput('streamAssetId', streamAsset.id) }}
     

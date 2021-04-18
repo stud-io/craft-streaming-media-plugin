@@ -1,0 +1,44 @@
+{% macro player(stream_asset, options) %}
+    {% set transcode_backend = craft.app.getModule('streaming-media').getSettings().backends[stream_asset.transcoding_backend] %}
+    
+    
+    {% if options.vjs | default(false) %}
+        {{ _self.player_vjs(transcode_backend, stream_asset, options) }}
+    {% else %}
+        {% if transcode_backend.backend == 'CloudflareStreamBackend' %}
+            {{ _self.player_cf(transcode_backend, stream_asset, options) }}
+        {% else %}
+            {{ _self.player_vidtag(transcode_backend, stream_asset, options) }}
+        {% endif %}
+    {% endif %}
+
+{% endmacro %}
+
+{% macro player_cf(backend, stream_asset, options) %}
+    {% set player_token = stream_asset.transcoding_backend_reference %}
+    {% if false %}
+        {% set player_token = craft.playback_token(stream_asset, options['playback_token'] | default({})) %}
+    {% endif %}
+    <iframe src="https://iframe.videodelivery.net/{{ player_token }}" style="border: none;" height="720" width="1280" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
+{% endmacro %}
+
+{% macro player_vidtag(backend, stream_asset, options) %}
+    <video controls {{ options.attrs | default('') }}>
+        <source src="{{ stream_asset.getStorageBackendReferenceFromJson.dash | replace('http', 'https') }}">
+        <source src="{{ stream_asset.getStorageBackendReferenceFromJson.hls | replace('http', 'https') }}">
+        Your browser does not support the video tag.
+    </video>
+{% endmacro %}
+
+{% macro player_vjs(backend, stream_asset, options) %}
+    {{ _self.player_vidtag(backend, stream_asset, {'attrs': 'class="video-js" data-setup="{}"'} | merge(options)) }}
+{% endmacro %}
+
+{% macro include_vjs() %}
+    {{ _self.include_vjs_css() }}
+    {{ _self.include_vjs_js() }}
+{% endmacro %}
+
+{% macro include_vjs_css() %}<link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />{% endmacro %}
+
+{% macro include_vjs_js() %}<script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>{% endmacro %}

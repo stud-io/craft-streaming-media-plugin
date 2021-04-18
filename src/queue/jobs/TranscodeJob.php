@@ -10,6 +10,8 @@ class TranscodeJob extends \craft\queue\BaseJob
 
     public $use_status_job = true;
 
+    public $catch_errors = false;
+
     public $stream_asset_id;
 
     public function __construct($stream_asset_id)
@@ -26,7 +28,7 @@ class TranscodeJob extends \craft\queue\BaseJob
     {
         $streamAsset = StreamAsset::find()->anyStatus()->id($this->stream_asset_id)->one();
         
-        $backend = StreamingMedia::getInstance()->backend->getBackend($streamAsset);
+        $backend = StreamingMedia::getInstance()->backend->getTranscodeBackend($streamAsset);
 
         try {
             $transcode_response = $backend->execute($streamAsset);
@@ -58,6 +60,9 @@ class TranscodeJob extends \craft\queue\BaseJob
         } catch (\Throwable $e) {
             // Don’t let an exception block the queue
             \Craft::warning("Something went wrong: {$e->getMessage()}", __METHOD__);
+
+            if($this->catch_errors === false)
+                throw $e;
 
             $streamAsset->transcoding_backend_status = StreamAsset::STATUS_TR_FAILED;
             $save_result = \Craft::$app->elements->saveElement($streamAsset);

@@ -52,6 +52,10 @@ class CloudflareStreamBackend
 
         if($info->status->state === 'ready'){
           $stream_asset->transcoding_backend_status = StreamAsset::STATUS_TR_COMPLETED;
+
+          $stream_asset->storage_backend_status = StreamAsset::STATUS_ST_READY;
+          $stream_asset->storage_backend_reference = json_encode($info->playback);
+
           $save_result = Craft::$app->elements->saveElement($stream_asset);
 
           return true;

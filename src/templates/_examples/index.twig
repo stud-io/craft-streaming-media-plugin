@@ -1,0 +1,23 @@
+{% extends "streaming-media/_base" %}
+
+{% block content %}
+<h1>Media Assets</h1>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for stream_asset in craft.stream_assets().all() %}
+    <div class="col">
+        <div class="card">
+            <img src="..." class="card-img-top" alt="...">
+            <div class="card-body">
+                <a href="stream-asset?id={{ stream_asset.id }}">
+                    <h5 class="card-title">{{ stream_asset.title }}</h5>
+                </a>
+                <p class="card-text">
+                    <pre>{{ stream_asset | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

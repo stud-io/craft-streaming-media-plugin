@@ -1,0 +1,10 @@
+{% extends "streaming-media/_base" %}
+{% import "streaming-media/player" as streaming_media_player %}
+
+{% set stream_asset = craft.stream_assets().id(craft.app.request.getQueryParam('id')|number_format).one %}
+
+{% block content %}
+<h1>{{ stream_asset.title }} <small>Media Asset</small></h1>
+
+{{ streaming_media_player.player(stream_asset, {}) }}
+{% endblock %}

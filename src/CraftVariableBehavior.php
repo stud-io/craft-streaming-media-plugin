@@ -25,7 +25,7 @@ class CraftVariableBehavior extends Behavior
     public function playback_token(StreamAsset $streamAsset)
     {
         if (StreamingMedia::getInstance()->is(StreamingMedia::EDITION_PRO)) {
-            $backend = StreamingMedia::getInstance()->backend->getBackend($streamAsset);
+            $backend = StreamingMedia::getInstance()->backend->getStorageBackend($streamAsset);
 
             return $backend->issue_token($streamAsset, []);    
         }

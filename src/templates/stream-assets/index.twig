@@ -1,13 +1,6 @@
-{% extends "_layouts/cp" %}
-
-{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
-
-{% set title = "Stream Assets" %}
+{% extends '_layouts/elementindex' %}
+{% set title = 'Stream Assets' %}
 {% set elementType = 'StudIO\\StreamingMedia\\elements\\StreamAsset' %}
-
-{% set crumbs = [
-    { label: 'Streaming Media', url: url('streaming-media') },
-] %}
 
 {% block actionButton %}
     <div id="button-container">
@@ -18,60 +11,3 @@
         </div>
     </div>
 {% endblock %}
-
-{% block content %}
-<table class="data fullwidth">
-  <thead>
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Title</th>
-      <th scope="col">Status</th>
-    </tr>
-  </thead>
-  {% for stream_asset in stream_assets %}
-  <tbody>
-    <tr>
-      <th scope="row">
-        <a href="{{ url('streaming-media/edit/' ~ stream_asset['id']) }}">{{ stream_asset['id'] }}</a>
-      </th>
-      <td>{{ stream_asset['title'] }}</td>
-      <td>{{ stream_asset.getStatus() }}</td>
-    </tr>
-  </tbody>
-  {% endfor %}
-</table>
-    <div id="stream_assets-vue-admin-table"></div>
-{% endblock %}
-
-{% set tableData = [] %}
-{% for stream_asset in stream_assets %}
-    {% set tableData = tableData|merge([{
-        id: stream_asset.id,
-        title: stream_asset.title,
-        url: url('streaming-media/edit/' ~ stream_asset['id']),
-        name: stream_asset.title,
-        status: stream_asset.getStatus()
-    }]) %}
-{% endfor %}
-
-{% js %}
-/*
-    var columns = [
-        {
-            name: '__slot:title',
-            title: 'Title',
-        },
-        {
-            name: '__slot:status',
-            title: 'Status',
-        }
-    ];
-
-    new Craft.VueAdminTable({
-        columns: columns,
-        container: '#stream_assets-vue-admin-table',
-        emptyMessage: 'No Media Assets have been defined yet',
-        tableData: {{ tableData|json_encode|raw }}
-    });
-*/
-{% endjs %}

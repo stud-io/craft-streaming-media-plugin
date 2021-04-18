@@ -57,6 +57,8 @@ class StreamAssetsController extends Controller
         $variables['streamAssetId'] = $streamAssetId;
         $variables['streamAsset'] = $streamAsset;
 
+        $variables['continueEditingUrl'] = $streamAsset->getCpEditUrl();
+
         $backends = StreamingMedia::getInstance()->getSettings()->backends;
         $variables['availableTranscodingBackends'] = [];
         $variables['availableStorageBackends'] = [];

@@ -24,16 +24,16 @@ class TranscodeStatusJob extends \craft\queue\BaseJob
     {
         $streamAsset = StreamAsset::find()->anyStatus()->id($this->stream_asset_id)->one();
         
-        $backend = StreamingMedia::getInstance()->backend->getBackend($streamAsset);
+        $backend = StreamingMedia::getInstance()->backend->getTranscodeBackend($streamAsset);
 
         try {
             $streamAsset = StreamAsset::find()->anyStatus()->id($this->stream_asset_id)->one();
               
             $transcode_done = $backend->get_status($streamAsset);
             \Craft::info("Transcode status: $transcode_done", __METHOD__);
-
+            var_dump($transcode_done);
             if(!$transcode_done){
-                sleep(30);
+                sleep(10);
                 \craft\helpers\Queue::push(new TranscodeStatusJob($streamAsset->id));
             }
 
