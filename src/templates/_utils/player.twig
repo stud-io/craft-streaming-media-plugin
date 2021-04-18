@@ -19,13 +19,25 @@
     {% if false %}
         {% set player_token = craft.playback_token(stream_asset, options['playback_token'] | default({})) %}
     {% endif %}
-    <iframe src="https://iframe.videodelivery.net/{{ player_token }}" style="border: none;" height="720" width="1280" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>
+    <iframe 
+        src="https://iframe.videodelivery.net/{{ player_token }}" 
+        style="border: none;" 
+        height="720" 
+        width="1280" 
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" 
+        allowfullscreen="true"
+    ></iframe>
 {% endmacro %}
 
 {% macro player_vidtag(backend, stream_asset, options) %}
-    <video controls {{ options.attrs | default('') }}>
-        <source src="{{ stream_asset.getStorageBackendReferenceFromJson.dash | replace('http', 'https') }}">
-        <source src="{{ stream_asset.getStorageBackendReferenceFromJson.hls | replace('http', 'https') }}">
+    <video
+        {% if options.autoplay | default(false) %}autoplay{% endif %}
+        {% if options.muted | default(false) %}muted{% endif %}
+        {% if options.controls | default(false) %}controls{% endif %}
+        {{ options.attrs | default('') | raw }}
+    >
+        <source src="{{ stream_asset.getStorageBackendReferenceFromJson.dash | replace('http://', 'https://') }}">
+        <source src="{{ stream_asset.getStorageBackendReferenceFromJson.hls | replace('http://', 'https://') }}">
         Your browser does not support the video tag.
     </video>
 {% endmacro %}
